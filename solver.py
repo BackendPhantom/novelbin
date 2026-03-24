@@ -3,11 +3,14 @@ import time
 
 from DrissionPage import ChromiumOptions, ChromiumPage
 
+from .config import BASE_URL, BROWSER_PROFILE_DIR
 
-def get_headers_automatically():
+
+def get_headers_automatically(prompt_login=False):
     """
     Launches a browser, allows manual/auto Cloudflare solving,
     and extracts the cookies for the scraper.
+    If prompt_login is True, waits for the user to log in before extracting cookies.
     """
     print("\n🤖 Launching browser to bypass Cloudflare...")
 
@@ -17,12 +20,19 @@ def get_headers_automatically():
     co.headless(False)
     co.set_argument("--no-sandbox")
 
+    # Persist profile between launches so Cloudflare trust survives.
+    profile_path = str(BROWSER_PROFILE_DIR)
+    try:
+        co.set_user_data_path(profile_path)
+    except Exception:
+        co.set_argument(f"--user-data-dir={profile_path}")
+
     # 2. Initialize Browser
     page = ChromiumPage(co)
 
     try:
         # 3. Go to the site
-        page.get("https://novelbin.com")
+        page.get(BASE_URL)
 
         print("⏳ Waiting for Cloudflare challenge...")
         print("💡 NOTE: If a puzzle appears, please solve it in the popup window!")
@@ -35,8 +45,15 @@ def get_headers_automatically():
             # If still on Cloudflare loop, wait
             time.sleep(1)
 
-        # Extra safety wait to ensure cookies are set
-        time.sleep(3)
+        # 5. If login is needed, wait for the user to log in
+        if prompt_login:
+            print("\n🔑 Please log in to novelbin in the browser window.")
+            input("   Press Enter here once you've logged in...")
+            # Give time for cookies to settle after login
+            time.sleep(3)
+        else:
+            # Extra safety wait to ensure cookies are set
+            time.sleep(3)
 
         # 5. Extract the "Golden Ticket" (Cookies & UA)
         # FIX: Call cookies() first to get the object, THEN call .as_dict()
@@ -50,12 +67,18 @@ def get_headers_automatically():
 
         headers = {
             "User-Agent": user_agent,
-            "Cookie": cookie_string,
-            "Referer": "https://novelbin.com/",
+            "Referer": f"{BASE_URL}/",
         }
+
+        payload = {
+            "headers": headers,
+            "cookies": cookies,
+            "cookie_string": cookie_string,
+        }
+
         print(headers)
         print("✅ Cloudflare bypassed! Headers extracted.")
-        return headers
+        return payload
 
     except Exception as e:
         print(f"❌ Auto-solver failed: {e}")

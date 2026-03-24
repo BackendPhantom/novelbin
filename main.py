@@ -9,7 +9,7 @@ from .config import DEFAULT_OUTPUT_DIR
 from .epub_builder import create_epub
 from .library import LibraryManager
 from .scraper import AsyncScraper
-from .utils import parse_chapter_selection
+from .utils import parse_chapter_selection, is_relevant_result
 
 
 async def download_workflow(
@@ -212,12 +212,34 @@ async def search_mode(scraper, lib, query=None):
     if not query:
         query = input("\n🔍 Enter novel name: ").strip()
 
+    # --- Layer 1: Normal search ---
     print("Searching...")
-    results = await scraper.search_novel(query)
+    all_results = await scraper.search_novel(query)
+
+    # Filter to only relevant results
+    results = [r for r in all_results if is_relevant_result(query, r["title"])]
 
     if not results:
-        print("❌ No novels found.")
-        return
+        # --- Layer 2: Slug brute-force fallback ---
+        if all_results:
+            print("⚠️ Search returned results but none matched your query.")
+        print("🔎 Trying URL patterns...")
+        slug_match = await scraper.try_slug_urls(query)
+
+        if slug_match:
+            print(f"✅ Found via URL: {slug_match['title']}")
+            results = [slug_match]
+        else:
+            # --- Layer 3: Manual URL input ---
+            print("❌ Could not find the novel automatically.")
+            manual_url = input(
+                "📎 Paste the novel URL (or press Enter to cancel): "
+            ).strip()
+            if not manual_url:
+                return
+            if not manual_url.startswith("http"):
+                manual_url = f"https://novelbin.com/b/{manual_url}"
+            results = [{"title": "Unknown (from URL)", "url": manual_url}]
 
     print("\nResults:")
     for i, r in enumerate(results, 1):

@@ -22,12 +22,14 @@ A powerful Python tool to scrape novels from [novelbin.com](https://novelbin.com
 ## 🚀 Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/BackendPhantom/novelbin.git
 cd novelbin
 ```
 
 2. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -37,6 +39,7 @@ pip install -r requirements.txt
 ### Basic Usage
 
 Run the program:
+
 ```bash
 python -m novelbin.main
 ```
@@ -44,6 +47,7 @@ python -m novelbin.main
 ### Quick Search Mode
 
 Search directly from command line:
+
 ```bash
 python -m novelbin.main -q "novel name"
 # or
@@ -53,12 +57,14 @@ python -m novelbin.main --query "novel name"
 ### Main Menu Options
 
 1. **🔍 Search & Download**
+
    - Search for novels by name
    - View search results and select a novel
    - Choose specific chapters or download all
    - Option to add novel to library for tracking
 
 2. **🔄 Check for Updates**
+
    - Automatically checks all novels in your library
    - Detects new chapters since last download
    - Quick download option for new chapters only
@@ -69,6 +75,7 @@ python -m novelbin.main --query "novel name"
 ### Chapter Selection
 
 When downloading, you can select chapters using various formats:
+
 - `1-10` - Download chapters 1 through 10
 - `1,5,10` - Download chapters 1, 5, and 10
 - `1-5,10-15` - Download chapters 1-5 and 10-15
@@ -112,15 +119,19 @@ Default settings in `config.py`:
 ## 🛡️ Features in Detail
 
 ### Automatic Cloudflare Bypass
+
 The scraper automatically detects when it encounters Cloudflare protection and launches a browser session to obtain valid cookies. These cookies are saved and reused for subsequent requests.
 
 ### Smart Caching
+
 Chapter content is cached locally to avoid redundant downloads if you need to rebuild an EPUB or re-select chapters.
 
 ### Cookie Persistence
+
 Authentication cookies are saved to disk and automatically loaded on startup, reducing the need for frequent browser automation.
 
 ### Error Handling
+
 - Automatic retries on failed requests
 - Progress tracking with real-time updates
 - Detailed error reporting for failed chapters
@@ -135,13 +146,17 @@ Authentication cookies are saved to disk and automatically loaded on startup, re
 ## 🐛 Troubleshooting
 
 ### 403 Forbidden Errors
+
 The scraper automatically handles Cloudflare protection. If issues persist:
+
 - Ensure Chrome/Chromium is installed
 - Check your internet connection
 - Try clearing the cache and cookies files
 
 ### Missing Chapters
+
 If some chapters fail to download:
+
 - Check the website availability
 - Verify the chapter URLs are valid
 - Retry the download
