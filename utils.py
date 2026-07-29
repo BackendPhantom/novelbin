@@ -2,6 +2,8 @@
 import re
 from typing import List, Set
 
+from .config import BASE_URL
+
 
 def clean_filename(text: str) -> str:
     """Sanitizes strings for use in filenames."""
@@ -52,6 +54,47 @@ def generate_slug_variants(query: str) -> List[str]:
             slugs.append(without_leading)
 
     return slugs
+
+
+def slugify_text(text: str) -> str:
+    """Convert free text into a URL-safe NovelBin slug."""
+    if not text:
+        return ""
+
+    slug = re.sub(r"[^a-zA-Z0-9\s-]", "", text).strip().lower()
+    slug = re.sub(r"[\s_]+", "-", slug)
+    slug = re.sub(r"-+", "-", slug)
+    return slug.strip("-")
+
+
+def build_novelbin_url(text: str) -> str:
+    """Build a NovelBin chapter/novel URL from a single input string."""
+    if not text:
+        return ""
+
+    stripped = text.strip()
+    if stripped.startswith("http://") or stripped.startswith("https://"):
+        return stripped
+
+    slug = slugify_text(stripped)
+    return f"{BASE_URL}/novel/{slug}" if slug else ""
+
+
+def build_novelbin_urls(inputs) -> List[str]:
+    """Build NovelBin URLs from one string or many inputs."""
+    if isinstance(inputs, str):
+        raw_inputs = [
+            part.strip() for part in re.split(r"[\n,]+", inputs) if part.strip()
+        ]
+    else:
+        raw_inputs = [str(item).strip() for item in inputs if str(item).strip()]
+
+    urls = []
+    for item in raw_inputs:
+        url = build_novelbin_url(item)
+        if url:
+            urls.append(url)
+    return urls
 
 
 def is_relevant_result(query: str, title: str, threshold: float = 0.5) -> bool:

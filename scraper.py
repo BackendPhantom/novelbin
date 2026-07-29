@@ -10,7 +10,6 @@ from typing import List, Dict, Optional, Tuple
 from curl_cffi.requests import AsyncSession, RequestsError
 from http.cookies import SimpleCookie
 
-from .solver import get_headers_automatically
 from .config import (
     BASE_URL,
     HEADERS,
@@ -26,6 +25,7 @@ from .config import (
     BURST_COOLDOWN_MIN,
     BURST_COOLDOWN_MAX,
     RECOVERY_REQUESTS_AFTER_CHALLENGE,
+    TRANSPORT_FAILURES_BEFORE_HTTPX_FALLBACK,
     CACHE_DIR,
     COOKIE_FILE,
 )
@@ -35,6 +35,8 @@ from .utils import generate_slug_variants
 class AsyncScraper:
     def __init__(self):
         self.semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+        # Limit concurrent file I/O to prevent "too many open files" errors
+        self.file_io_semaphore = asyncio.Semaphore(10)
 
         # <--- NEW: Synchronization Lock
         self.browser_lock = asyncio.Lock()
@@ -51,6 +53,8 @@ class AsyncScraper:
         self.max_request_interval = REQUEST_MAX_INTERVAL
         self.total_successful_requests = 0
         self.recovery_requests_left = 0
+        self.last_solver_launch_monotonic = 0.0
+        self.solver_cooldown_seconds = 180
         self.load_cookies()
 
     def _effective_request_interval(self) -> float:
@@ -72,8 +76,8 @@ class AsyncScraper:
             target_interval = self._effective_request_interval()
             delay = max(0.0, target_interval - elapsed)
 
-            # Small jitter helps avoid perfectly periodic traffic.
-            delay += random.uniform(0.05, 0.35)
+            # Minimal jitter for faster downloads
+            delay += random.uniform(0.01, 0.05)
 
             if delay > 0:
                 await asyncio.sleep(delay)
@@ -99,22 +103,30 @@ class AsyncScraper:
         if self.recovery_requests_left > 0:
             self.recovery_requests_left -= 1
 
+    def _solver_launch_allowed(self) -> bool:
+        now = time.monotonic()
+        elapsed = now - self.last_solver_launch_monotonic
+        return elapsed >= self.solver_cooldown_seconds
+
     def _looks_like_cloudflare_challenge(self, html: Optional[str]) -> bool:
         if not html:
             return False
 
         probe = html.lower()
-        strong_markers = [
-            "just a moment",
-            "cf-browser-verification",
-            "cdn-cgi/challenge-platform",
-            "cf_chl",
-            "cf_chl_",
-            "checking your browser before accessing",
-        ]
+        # Very specific markers only (avoid false positives from novel text like
+        # "just a moment").
+        if "cdn-cgi/challenge-platform" in probe:
+            return True
+        if "cf-browser-verification" in probe:
+            return True
+        if "cf_chl" in probe or "cf_chl_" in probe:
+            return True
 
-        # Avoid false positives from normal pages that merely reference Cloudflare.
-        return any(marker in probe for marker in strong_markers)
+        # Fallback: classic interstitial title + cloudflare mention.
+        if "<title>just a moment" in probe and "cloudflare" in probe:
+            return True
+
+        return False
 
     def _parse_cookie_string(self, cookie_string: str) -> Dict[str, str]:
         parsed: Dict[str, str] = {}
@@ -188,6 +200,56 @@ class AsyncScraper:
 
         return cookies
 
+    async def _fetch_url_httpx_fallback(self, url: str) -> Optional[str]:
+        """Fallback fetch path for repeated transport/connect failures."""
+        try:
+            import httpx
+        except Exception:
+            print(
+                "⚠️ httpx fallback unavailable (httpx not installed). "
+                "Install with: pip install httpx"
+            )
+            return None
+
+        try:
+            async with httpx.AsyncClient(
+                timeout=REQUEST_TIMEOUT,
+                follow_redirects=True,
+                http2=True,
+            ) as client:
+                response = await client.get(
+                    url,
+                    headers=self.current_headers,
+                    cookies=self.current_cookies,
+                )
+
+            response_text = response.text
+
+            # Keep cookie jar fresh from response set-cookie headers
+            response_cookies = {str(k): str(v) for k, v in response.cookies.items()}
+            if response_cookies:
+                changed = any(
+                    self.current_cookies.get(k) != v
+                    for k, v in response_cookies.items()
+                )
+                if changed:
+                    self.current_cookies.update(response_cookies)
+                    self.last_update_time = time.time()
+                    self.save_cookies()
+
+            # Do not run solver here; fallback path is for transport reliability only.
+            if response.status_code in (403, 404, 429):
+                return None
+
+            if self._looks_like_cloudflare_challenge(response_text):
+                return None
+
+            response.raise_for_status()
+            return response_text
+        except Exception as e:
+            print(f"⚠️ httpx fallback failed ({url}): {e}")
+            return None
+
     def load_cookies(self):
         """Loads cookies/headers from JSON file if it exists."""
         if COOKIE_FILE.exists():
@@ -248,7 +310,11 @@ class AsyncScraper:
             else:
                 print("\n🔒 403 Forbidden detected. Engaging auto-solver...")
 
+            self.last_solver_launch_monotonic = time.monotonic()
+
             # 3. Run the solver (blocking call moved to thread)
+            from .solver import get_headers_automatically
+
             new_headers = await asyncio.to_thread(
                 get_headers_automatically, prompt_login=prompt_login
             )
@@ -272,6 +338,7 @@ class AsyncScraper:
             return False
 
     async def _fetch_url(self, session: AsyncSession, url: str) -> Optional[str]:
+        transport_error_streak = 0
         for attempt in range(MAX_RETRIES):
             try:
                 async with self.semaphore:
@@ -283,6 +350,7 @@ class AsyncScraper:
                         timeout=REQUEST_TIMEOUT,
                         impersonate="chrome120",
                     )
+                    response_text = response.text
 
                     # Keep cookie jar fresh from response set-cookie headers
                     response_cookies = self._extract_response_cookies(response)
@@ -304,36 +372,64 @@ class AsyncScraper:
                         await asyncio.sleep(RETRY_DELAY * (attempt + 1))
                         continue
 
-                    if response.status_code in (403, 404):
-                        # Both 403 and 404 can mean blocked/not logged in
+                    if response.status_code == 404:
+                        # Real not-found responses should not trigger solver.
+                        return None
+
+                    if response.status_code == 403:
                         fail_time = time.time()
                         self.recovery_requests_left = max(
                             self.recovery_requests_left,
                             RECOVERY_REQUESTS_AFTER_CHALLENGE,
                         )
 
-                        if attempt < MAX_RETRIES:
-                            login_hint = response.status_code == 404
-                            success = await self._update_headers_if_needed(
-                                fail_time, prompt_login=login_hint
+                        looks_like_challenge = self._looks_like_cloudflare_challenge(
+                            response_text
+                        )
+
+                        # If this is a generic 403 without Cloudflare challenge markers,
+                        # do a backoff retry and avoid opening browser repeatedly.
+                        if not looks_like_challenge:
+                            pause = (RETRY_DELAY * (attempt + 1)) + random.uniform(
+                                1.0, 3.0
                             )
+                            print(
+                                f"⚠️ 403 (no challenge markers) for {url}. Backing off {pause:.1f}s..."
+                            )
+                            await asyncio.sleep(pause)
+                            continue
+
+                        if attempt < MAX_RETRIES:
+                            # For confirmed challenge pages, bypass cooldown and let
+                            # the shared lock+timestamp dedupe solver launches.
+                            success = await self._update_headers_if_needed(
+                                fail_time, prompt_login=False
+                            )
+
                             if success:
                                 await asyncio.sleep(2)
                                 continue
+
+                            await asyncio.sleep(RETRY_DELAY * (attempt + 1))
+                            continue
 
                         print("❌ Auto-solver failed or max retries reached.")
                         return None
 
                     # Some Cloudflare blocks return 200 with challenge HTML.
-                    if self._looks_like_cloudflare_challenge(response.text):
+                    if self._looks_like_cloudflare_challenge(response_text):
                         fail_time = time.time()
                         self.recovery_requests_left = max(
                             self.recovery_requests_left,
                             RECOVERY_REQUESTS_AFTER_CHALLENGE,
                         )
+
+                        # For confirmed challenge pages, bypass cooldown and let
+                        # the shared lock+timestamp dedupe solver launches.
                         success = await self._update_headers_if_needed(
                             fail_time, prompt_login=False
                         )
+
                         if success:
                             await asyncio.sleep(2)
                             continue
@@ -341,12 +437,33 @@ class AsyncScraper:
                         return None
 
                     response.raise_for_status()
+                    transport_error_streak = 0
                     self._mark_successful_request()
                     await self._cooldown_if_needed()
                     return response.text
 
             except (RequestsError, asyncio.TimeoutError) as e:
+                transport_error_streak += 1
                 print(f"⚠️ Network error ({url}): {e}. Retrying...")
+
+                # Try httpx fallback earlier during concurrent operations (like update)
+                # to avoid cascading failures across parallel calls
+                should_try_httpx = (
+                    transport_error_streak >= TRANSPORT_FAILURES_BEFORE_HTTPX_FALLBACK
+                    or (
+                        attempt == MAX_RETRIES - 1
+                    )  # Last attempt - try httpx as alternative
+                )
+
+                if should_try_httpx:
+                    print("🔁 Trying httpx fallback for transport recovery...")
+                    fallback_text = await self._fetch_url_httpx_fallback(url)
+                    if fallback_text is not None:
+                        print("✅ httpx fallback succeeded.")
+                        self._mark_successful_request()
+                        await self._cooldown_if_needed()
+                        return fallback_text
+
                 await asyncio.sleep(RETRY_DELAY)
             except Exception as e:
                 print(f"❌ Error fetching {url}: {e}")
@@ -432,46 +549,183 @@ class AsyncScraper:
             if desc_div
             else ""
         )
+
         chapters = []
+        seen_urls = set()
+        novel_slug = url.rstrip("/").split("/")[-1]
+        chapter_url_marker = f"/b/{novel_slug}/chapter-"
+
+        def add_chapter_links(source_html: str):
+            source_soup = BeautifulSoup(source_html, "html.parser")
+            for a in source_soup.select("a[href]"):
+                href = a.get("href")
+                if not href:
+                    continue
+                if chapter_url_marker not in href:
+                    continue
+                if not href.startswith("http"):
+                    href = BASE_URL + href
+                if href in seen_urls:
+                    continue
+                seen_urls.add(href)
+
+                # Prefer visible text, but fall back to a readable slug-derived title
+                name_text = a.get_text(" ", strip=True)
+                if not name_text:
+                    # Derive from URL slug: .../chapter-1-title-goes-here
+                    slug = href.rstrip("/\n\r ").split("/")[-1]
+                    if slug.startswith("chapter-"):
+                        slug_title = slug[len("chapter-") :]
+                    else:
+                        slug_title = slug
+                    # Replace hyphens with spaces and collapse multiple spaces
+                    derived = " ".join(
+                        part for part in slug_title.replace("-", " ").split()
+                    )
+                    # Capitalize first letter to make it look nicer
+                    name_text = derived.capitalize() if derived else slug
+
+                chapters.append({"name": name_text, "url": href})
+
         novel_id_tag = soup.select_one("#rating[data-novel-id]")
         if novel_id_tag:
             novel_id = novel_id_tag["data-novel-id"]
             ajax_url = f"{BASE_URL}/ajax/chapter-archive?novelId={novel_id}"
             ajax_html = await self._fetch_url(session, ajax_url)
             if ajax_html:
-                ajax_soup = BeautifulSoup(ajax_html, "html.parser")
-                for li in ajax_soup.select("ul.list-chapter li a"):
-                    href = li.get("href")
-                    if href and not href.startswith("http"):
-                        href = BASE_URL + href
-                    chapters.append({"name": li.text.strip(), "url": href})
-        if not chapters:
-            for a in soup.select(".list-chapter li a, .chapter-list li a"):
-                href = a.get("href")
-                if href and not href.startswith("http"):
-                    href = BASE_URL + href
-                chapters.append({"name": a.text.strip(), "url": href})
+                add_chapter_links(ajax_html)
+
+        add_chapter_links(html)
         return title, author, cover_url, description, chapters
 
     async def fetch_chapter_content(
         self, session: AsyncSession, chapter: Dict
-    ) -> Optional[str]:
+    ) -> Optional[Dict[str, str]]:
         cache_path = Path(self._get_cache_path(chapter["url"]))
-        if cache_path.exists():
-            async with aiofiles.open(cache_path, "r", encoding="utf-8") as f:
-                return await f.read()
+
+        # Use semaphore to limit concurrent file I/O operations
+        async with self.file_io_semaphore:
+            if cache_path.exists():
+                try:
+                    async with aiofiles.open(cache_path, "r", encoding="utf-8") as f:
+                        return {
+                            "title": chapter.get("name", ""),
+                            "content": await f.read(),
+                        }
+                except Exception:
+                    pass  # Fall back to fetching if cache read fails
+
         html = await self._fetch_url(session, chapter["url"])
         if not html:
             return None
         soup = self.clean_soup(html)
-        content_tag = soup.select_one("#chr-content, .chr-c, .chapter-content, article")
+
+        # Extract chapter title: first try h4 in #chr-content, then span.chr-text
+        chapter_title = ""
+        chr_content = soup.select_one("#chr-content")
+        if chr_content:
+            h4_tag = chr_content.find("h4")
+            if h4_tag:
+                chapter_title = h4_tag.get_text(strip=True)
+
+        if not chapter_title:
+            span_tag = soup.select_one("span.chr-text")
+            if span_tag:
+                chapter_title = span_tag.get_text(strip=True)
+
+        if not chapter_title:
+            chapter_title = chapter.get("name", "")
+
+        # Try a list of common selectors in order of likelihood
+        selectors = [
+            "#chr-content",
+            ".chr-c",
+            ".chapter-content",
+            "article",
+            "#chapter",
+            ".read-content",
+            ".content",
+            ".chapter-inner",
+        ]
+
+        content_tag = None
+        for sel in selectors:
+            content_tag = soup.select_one(sel)
+            if content_tag:
+                break
+
+        # If still not found, check for noscript blocks that sometimes contain content
+        if content_tag is None:
+            nos = soup.select_one("noscript")
+            if nos and nos.decode_contents().strip():
+                content_tag = BeautifulSoup(nos.decode_contents(), "html.parser")
+
+        clean_content = ""
+
         if content_tag:
-            for bad in content_tag.select(
-                "div, script, style, .ads, .chapter-title, h3, h4"
-            ):
+            # Remove noisy elements but keep useful paragraphs
+            for bad in content_tag.select("script, style, .ads, .chapter-title"):
                 bad.decompose()
-            clean_content = content_tag.decode_contents()
-            async with aiofiles.open(cache_path, "w", encoding="utf-8") as f:
-                await f.write(clean_content)
-            return clean_content
+            # If the element contains paragraphs, keep them; otherwise take inner HTML
+            paragraphs = content_tag.find_all("p")
+            if paragraphs:
+                pieces = []
+                for p in paragraphs:
+                    text_html = p.decode_contents().strip()
+                    if text_html:
+                        pieces.append(f"<p>{text_html}</p>")
+                clean_content = "\n".join(pieces)
+            else:
+                clean_content = content_tag.decode_contents().strip()
+
+        # Final fallback: try to assemble from body paragraphs
+        if not clean_content:
+            body_ps = soup.find_all("p")
+            pieces = []
+            for p in body_ps:
+                t = p.get_text(strip=True)
+                if t:
+                    pieces.append(f"<p>{t}</p>")
+            clean_content = "\n".join(pieces)
+
+        if clean_content:
+            try:
+                # Use semaphore to limit concurrent file I/O operations
+                async with self.file_io_semaphore:
+                    async with aiofiles.open(cache_path, "w", encoding="utf-8") as f:
+                        await f.write(clean_content)
+            except Exception:
+                pass  # Silently fail - cache is not critical
+            return {"title": chapter_title, "content": clean_content}
+
         return None
+
+    async def save_raw_pages(self, urls: List[str], out_dir: str) -> List[str]:
+        """Fetch raw HTML for each URL and save to `out_dir`.
+
+        Returns list of saved file paths.
+        """
+        saved_paths: List[str] = []
+        out_path = Path(out_dir)
+        out_path.mkdir(parents=True, exist_ok=True)
+
+        async with AsyncSession(impersonate="chrome120") as session:
+            for url in urls:
+                try:
+                    html = await self._fetch_url(session, url)
+                    if not html:
+                        print(f"⚠️ No content for {url}")
+                        continue
+
+                    fname = hashlib.md5(url.encode()).hexdigest() + ".html"
+                    file_path = out_path / fname
+                    # Use semaphore to limit concurrent file I/O
+                    async with self.file_io_semaphore:
+                        async with aiofiles.open(file_path, "w", encoding="utf-8") as f:
+                            await f.write(html)
+                    saved_paths.append(str(file_path))
+                    print(f"✅ Saved {url} -> {file_path}")
+                except Exception as e:
+                    print(f"❌ Failed to save {url}: {e}")
+
+        return saved_paths

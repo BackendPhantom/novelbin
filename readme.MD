@@ -1,52 +1,38 @@
-# NovelBin Scraper & EPUB Builder
+# NovelBin
 
-A powerful Python tool to scrape novels from [novelbin.com](https://novelbin.com) and compile them into EPUB files for offline reading.
+NovelBin is a Python CLI for scraping novels from novelarrow.com, downloading selected chapters, and packaging them into EPUB files for offline reading.
 
-## 🌟 Features
+## What the current codebase does
 
-- **Smart Novel Scraping**: Download complete novels or specific chapter ranges from novelbin.com
-- **EPUB Generation**: Automatically creates properly formatted EPUB files with metadata and styling
-- **Anti-Bot Protection**: Automatic Cloudflare bypass using browser automation
-- **Library Management**: Track your favorite novels and check for new chapters
-- **Parallel Downloads**: Fast concurrent chapter downloading with progress tracking
-- **Smart Caching**: Caches chapter content to avoid redundant downloads
-- **Cookie Persistence**: Saves authentication cookies for seamless access
-- **Update Checking**: Automatically detects new chapters for tracked novels
-- **Termux Support**: Works on Android devices via Termux
+- Searches for novels and resolves direct URLs
+- Downloads chapter content with concurrency, retries, and adaptive pacing
+- Builds EPUB files with a cover image, metadata, styled chapter content, and a chapter list
+- Tracks novels in a local library and checks for new chapters later
+- Supports background job monitoring and batch URL processing
+- Can refresh metadata and cover art for an existing EPUB
+- Can save raw HTML samples for debugging or inspection
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.8+
-- Chrome/Chromium browser (for Cloudflare bypass)
+- The runtime dependencies used by the project, including:
+  - curl_cffi
+  - beautifulsoup4
+  - aiofiles
+- Optional: httpx for the transport fallback path
 
-## 🚀 Installation
+## Installation
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/BackendPhantom/novelbin.git
-cd novelbin
-```
-
-2. Install dependencies:
+From the parent directory that contains the novelbin package:
 
 ```bash
-pip install -r requirements.txt
-```
-
-## 📖 Usage
-
-### Basic Usage
-
-Run the program:
-
-```bash
+python -m pip install curl-cffi beautifulsoup4 aiofiles
 python -m novelbin.main
 ```
 
-### Quick Search Mode
+## Running the CLI
 
-Search directly from command line:
+### Quick search
 
 ```bash
 python -m novelbin.main -q "novel name"
@@ -54,125 +40,70 @@ python -m novelbin.main -q "novel name"
 python -m novelbin.main --query "novel name"
 ```
 
-### Main Menu Options
+### Download one or more novels
 
-1. **🔍 Search & Download**
-
-   - Search for novels by name
-   - View search results and select a novel
-   - Choose specific chapters or download all
-   - Option to add novel to library for tracking
-
-2. **🔄 Check for Updates**
-
-   - Automatically checks all novels in your library
-   - Detects new chapters since last download
-   - Quick download option for new chapters only
-
-3. **❌ Exit**
-   - Exit the application
-
-### Chapter Selection
-
-When downloading, you can select chapters using various formats:
-
-- `1-10` - Download chapters 1 through 10
-- `1,5,10` - Download chapters 1, 5, and 10
-- `1-5,10-15` - Download chapters 1-5 and 10-15
-- Press Enter - Download all chapters
-
-## 🗂️ Project Structure
-
-```
-novelbin/
-├── config.py           # Configuration settings and constants
-├── main.py            # Main application entry point
-├── scraper.py         # Novel scraping and web requests
-├── solver.py          # Cloudflare bypass automation
-├── epub_builder.py    # EPUB file creation
-├── library.py         # Library management for tracking
-└── utils.py           # Helper utilities
+```bash
+python -m novelbin.main --url https://novelarrow.com/b/novel-one
 ```
 
-## ⚙️ Configuration
+```bash
+python -m novelbin.main --urls https://novelarrow.com/b/novel-one https://novelarrow.com/b/novel-two https://novelarrow.com/b/novel-three
+```
 
-Default settings in `config.py`:
+### Save raw HTML samples
 
-- **Output Directory**: `~/Documents/Novels` (Desktop) or `/storage/emulated/0/Documents/Novels/New` (Termux)
-- **Max Concurrent Requests**: 3
-- **Request Timeout**: 30 seconds
-- **Max Retries**: 3
+```bash
+python -m novelbin.main --save-html "novel name"
+```
 
-## 🔧 How It Works
+### Refresh cover and metadata for an existing EPUB
 
-1. **Search**: Queries novelbin.com for matching novels
-2. **Metadata Extraction**: Scrapes novel title, author, cover image, description, and chapter list
-3. **Anti-Bot Bypass**: Automatically handles Cloudflare protection using browser automation
-4. **Chapter Download**: Downloads chapter content with parallel processing
-5. **EPUB Building**: Creates a properly formatted EPUB file with:
-   - Cover image
-   - Metadata (title, author, description)
-   - Table of contents
-   - Styled chapter content
-6. **Library Tracking**: Saves novel information for future update checks
+```bash
+python -m novelbin.main --refresh-cover "novel name" --epub-path /path/to/book.epub
+```
 
-## 🛡️ Features in Detail
+## Interactive commands
 
-### Automatic Cloudflare Bypass
+When the app starts, it enters an interactive prompt with commands such as:
 
-The scraper automatically detects when it encounters Cloudflare protection and launches a browser session to obtain valid cookies. These cookies are saved and reused for subsequent requests.
+- search <query> - search for a novel and choose a result
+- download <name-or-url>[,...] - download one or more novels
+- update - check the library for new chapters
+- meta <url|name|path> - refresh metadata and cover art for an existing EPUB
+- status - show active jobs
+- watch - monitor job progress
+- stopwatch - stop the monitor
+- cancel <job#|url> - cancel a queued or running job
+- library - list tracked novels
+- exit - quit the CLI
 
-### Smart Caching
+## Chapter selection
 
-Chapter content is cached locally to avoid redundant downloads if you need to rebuild an EPUB or re-select chapters.
+When prompted for chapters, you can use any of these formats:
 
-### Cookie Persistence
+- 1-10: download chapters 1 through 10
+- 1,5,10: download specific chapters
+- 1-5,10-15: download multiple ranges
+- Press Enter: download all chapters
 
-Authentication cookies are saved to disk and automatically loaded on startup, reducing the need for frequent browser automation.
+## Output locations
 
-### Error Handling
+By default, EPUBs and supporting files are written to:
 
-- Automatic retries on failed requests
-- Progress tracking with real-time updates
-- Detailed error reporting for failed chapters
+- Desktop: ~/Documents/Novels
+- Termux: /storage/emulated/0/Documents/Novels/New
 
-## 📁 Output Files
+The tool also creates:
 
-- **EPUB files**: Saved to the configured output directory
-- **Library**: `library.json` stores tracked novels
-- **Cookies**: `cookies.json` stores authentication data
-- **Cache**: `.cache/` directory stores downloaded chapter content
+- .cache/ for cached chapter content
+- library.json for tracked novels
+- cookies.json for saved request state
+- .browser_profile/ for browser-related data
 
-## 🐛 Troubleshooting
+## Notes
 
-### 403 Forbidden Errors
+The scraper uses adaptive request pacing and retry handling, and it tries to recover from Cloudflare-style challenges by reusing saved cookies and request state. Batch downloads are handled through a task manager so multiple novels can be processed without blocking the interactive CLI.
 
-The scraper automatically handles Cloudflare protection. If issues persist:
+## License and disclaimer
 
-- Ensure Chrome/Chromium is installed
-- Check your internet connection
-- Try clearing the cache and cookies files
-
-### Missing Chapters
-
-If some chapters fail to download:
-
-- Check the website availability
-- Verify the chapter URLs are valid
-- Retry the download
-
-## 📝 License
-
-This project is for educational purposes only. Please respect the original content creators and the website's terms of service.
-
-## ⚠️ Disclaimer
-
-This tool is intended for personal use only. Users are responsible for complying with novelbin.com's terms of service and copyright laws. The developers are not responsible for any misuse of this software.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit issues or pull requests.
-
-## 📧 Support
-
-If you encounter any issues or have questions, please open an issue on GitHub.
+This project is intended for personal use only. Respect the original content creators, the website’s terms of service, and local copyright laws.

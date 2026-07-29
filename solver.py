@@ -1,9 +1,12 @@
-# novelbin/solver.py
+import logging
 import time
 
 from DrissionPage import ChromiumOptions, ChromiumPage
 
 from .config import BASE_URL, BROWSER_PROFILE_DIR
+
+# Initialize the logger for this module
+logger = logging.getLogger(__name__)
 
 
 def get_headers_automatically(prompt_login=False):
@@ -12,7 +15,7 @@ def get_headers_automatically(prompt_login=False):
     and extracts the cookies for the scraper.
     If prompt_login is True, waits for the user to log in before extracting cookies.
     """
-    print("\n🤖 Launching browser to bypass Cloudflare...")
+    logger.info("🤖 Launching browser to bypass Cloudflare...")
 
     # 1. Configure Browser
     co = ChromiumOptions()
@@ -34,20 +37,92 @@ def get_headers_automatically(prompt_login=False):
         # 3. Go to the site
         page.get(BASE_URL)
 
-        print("⏳ Waiting for Cloudflare challenge...")
-        print("💡 NOTE: If a puzzle appears, please solve it in the popup window!")
+        logger.info("⏳ Waiting for Cloudflare challenge...")
+        logger.info(
+            "💡 NOTE: If a puzzle appears, please solve it in the popup window!"
+        )
+        logger.info(
+            "⏱️  This will wait indefinitely until the puzzle is solved or you abort."
+        )
 
         # 4. Wait until we are actually on the site
-        # We check for the specific element '.novel-list' or 'Recent Novels' text
-        for _ in range(30):
-            if page.ele(".novel-list") or "Novel" in page.title:
-                break
-            # If still on Cloudflare loop, wait
+        max_checks = 600  # ~10 minutes of checks
+        checks_done = 0
+
+        while checks_done < max_checks:
+            try:
+                # Check for success (timeout=0.5 prevents locking the thread for too long)
+                if page.ele(".novel-list", timeout=0.5) or "Novel" in page.title:
+                    logger.info("✅ Page loaded successfully!")
+                    break
+            except Exception as e:
+                # --- THE KILL SWITCH ---
+                # If the user clicks the 'X' on the browser, DrissionPage loses connection.
+                # Catching this prevents the immortal zombie thread.
+                err_str = str(e).lower()
+                if (
+                    "disconnected" in err_str
+                    or "closed" in err_str
+                    or "target" in err_str
+                ):
+                    raise RuntimeError(
+                        "Browser window was closed by the user before completion."
+                    ) from e
+
+                # If it's a minor evaluation error, log it to debug and keep trying
+                logger.debug(f"Ignored evaluation error during Cloudflare check: {e}")
+
+            checks_done += 1
+
+            # Print progress every 10 seconds
+            if checks_done % 10 == 0:
+                logger.info(
+                    f"   Still waiting ({checks_done} seconds)... (Ctrl+C in terminal to abort)"
+                )
+
             time.sleep(1)
+        else:
+            # If we hit max_checks, give user option to continue or abort
+            logger.warning(
+                "⚠️ Still waiting after 10 minutes. The puzzle may be stuck."
+            )
+
+            # Note: input() blocks the thread. If deploying headless later, remove this.
+            print(
+                "   Press Enter to continue waiting, or type 'abort' to cancel: ",
+                end="",
+            )
+            response = input().strip().lower()
+
+            if response == "abort":
+                raise RuntimeError("User manually aborted Cloudflare puzzle solving.")
+
+            # Reset counter and keep waiting
+            checks_done = 0
+            while True:
+                try:
+                    if page.ele(".novel-list", timeout=0.5) or "Novel" in page.title:
+                        logger.info("✅ Page loaded successfully!")
+                        break
+                except Exception as e:
+                    err_str = str(e).lower()
+                    if (
+                        "disconnected" in err_str
+                        or "closed" in err_str
+                        or "target" in err_str
+                    ):
+                        raise RuntimeError(
+                            "Browser window was closed by the user before completion."
+                        ) from e
+
+                checks_done += 1
+                if checks_done % 10 == 0:
+                    logger.info(f"   Still waiting ({checks_done} more seconds)...")
+                time.sleep(1)
 
         # 5. If login is needed, wait for the user to log in
         if prompt_login:
-            print("\n🔑 Please log in to novelbin in the browser window.")
+            logger.info("🔑 Please log in to novelbin in the browser window.")
             input("   Press Enter here once you've logged in...")
             # Give time for cookies to settle after login
             time.sleep(3)
@@ -55,14 +130,9 @@ def get_headers_automatically(prompt_login=False):
             # Extra safety wait to ensure cookies are set
             time.sleep(3)
 
-        # 5. Extract the "Golden Ticket" (Cookies & UA)
-        # FIX: Call cookies() first to get the object, THEN call .as_dict()
+        # 6. Extract the "Golden Ticket" (Cookies & UA)
         cookies = page.cookies().as_dict()
-
-        # User Agent is usually a property string
         user_agent = page.user_agent
-
-        # Convert dictionary to cookie string format just in case
         cookie_string = "; ".join([f"{k}={v}" for k, v in cookies.items()])
 
         headers = {
@@ -76,16 +146,22 @@ def get_headers_automatically(prompt_login=False):
             "cookie_string": cookie_string,
         }
 
-        print(headers)
-        print("✅ Cloudflare bypassed! Headers extracted.")
+        logger.debug(f"Headers extracted: {headers}")
+        logger.info("✅ Cloudflare bypassed! Headers extracted.")
         return payload
 
+    except RuntimeError as e:
+        # Expected manual aborts / kill switches
+        logger.error(f"❌ Auto-solver aborted: {e}")
+        raise e  # Must re-raise so the calling thread knows it failed
+
     except Exception as e:
-        print(f"❌ Auto-solver failed: {e}")
-        return None
+        # Unexpected crashes
+        logger.exception("❌ Auto-solver encountered a critical failure.")
+        raise RuntimeError("Critical solver failure") from e
 
     finally:
-        # Close the browser window
+        # Guarantee the browser window is destroyed when the thread exits
         try:
             page.quit()
         except:

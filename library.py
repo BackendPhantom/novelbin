@@ -2,8 +2,6 @@
 import json
 from pathlib import Path
 
-import aiofiles
-
 from .config import LIBRARY_FILE
 
 
@@ -28,10 +26,31 @@ class LibraryManager:
         with open(self.file, "w", encoding="utf-8") as f:
             json.dump(self.library, f, indent=4, ensure_ascii=False)
 
-    def add_novel(self, title, url, total_chapters):
+    def add_novel(
+        self,
+        title,
+        url,
+        total_chapters,
+        output_path=None,
+        output_filename=None,
+    ):
         """Adds or updates a novel in the library."""
         self.load()
-        self.library[url] = {"title": title, "url": url, "last_count": total_chapters}
+        existing = self.library.get(url, {})
+
+        entry = {"title": title, "url": url, "last_count": total_chapters}
+
+        resolved_output_path = output_path or existing.get("output_path")
+        if resolved_output_path:
+            entry["output_path"] = str(resolved_output_path)
+            if not output_filename:
+                output_filename = Path(resolved_output_path).stem
+
+        resolved_output_filename = output_filename or existing.get("output_filename")
+        if resolved_output_filename:
+            entry["output_filename"] = resolved_output_filename
+
+        self.library[url] = entry
         self.save()
         print(f"✅ Added/Updated '{title}' in your library.")
 
