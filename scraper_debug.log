@@ -1,0 +1,262 @@
+2026-07-29 09:37:16,965 - asyncio - DEBUG - Using selector: EpollSelector
+2026-07-29 09:37:16,965 - asyncio - DEBUG - Using selector: EpollSelector
+2026-07-29 09:38:11,092 - asyncio - DEBUG - Using selector: EpollSelector
+2026-07-29 09:38:11,092 - asyncio - DEBUG - Using selector: EpollSelector
+2026-07-29 09:38:11,098 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:38:11,098 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:38:11,100 - novelbin.scraper - INFO - 🧹 Starting background cache cleanup (TTL: 48h, Limit: 1024MB)...
+2026-07-29 09:38:11,100 - novelbin.scraper - INFO - 🧹 Starting background cache cleanup (TTL: 48h, Limit: 1024MB)...
+2026-07-29 09:38:17,082 - novelbin.scraper - DEBUG - 404 Not Found for https://novelarrow.com/api-web/novels/checking-in-for-100-000-years/.
+2026-07-29 09:38:17,082 - novelbin.scraper - DEBUG - 404 Not Found for https://novelarrow.com/api-web/novels/checking-in-for-100-000-years/.
+2026-07-29 09:38:17,086 - novelbin.epub_builder - INFO - Auto-generated URL from name/path: https://novelarrow.com/novel/checking-in-for-100000-years
+2026-07-29 09:38:17,086 - novelbin.epub_builder - INFO - Auto-generated URL from name/path: https://novelarrow.com/novel/checking-in-for-100000-years
+2026-07-29 09:38:17,088 - novelbin.epub_builder - INFO - Fetching fresh metadata for https://novelarrow.com/novel/checking-in-for-100000-years using AsyncScraper...
+2026-07-29 09:38:17,088 - novelbin.epub_builder - INFO - Fetching fresh metadata for https://novelarrow.com/novel/checking-in-for-100000-years using AsyncScraper...
+2026-07-29 09:38:17,091 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:38:17,091 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:38:18,092 - novelbin.scraper - INFO - Cloudflare challenge detected for https://novelarrow.com/novel/checking-in-for-100000-years. Waking solver...
+2026-07-29 09:38:18,092 - novelbin.scraper - INFO - Cloudflare challenge detected for https://novelarrow.com/novel/checking-in-for-100000-years. Waking solver...
+2026-07-29 09:38:20,210 - novelbin.solver - INFO - 🤖 Launching browser to bypass Cloudflare...
+2026-07-29 09:38:20,210 - novelbin.solver - INFO - 🤖 Launching browser to bypass Cloudflare...
+2026-07-29 09:38:20,280 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:20,280 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:20,281 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:20,281 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:20,288 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:38:20,288 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:38:20,493 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (2): 127.0.0.1:9222
+2026-07-29 09:38:20,493 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (2): 127.0.0.1:9222
+2026-07-29 09:38:20,699 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (3): 127.0.0.1:9222
+2026-07-29 09:38:20,699 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (3): 127.0.0.1:9222
+2026-07-29 09:38:20,903 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (4): 127.0.0.1:9222
+2026-07-29 09:38:20,903 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (4): 127.0.0.1:9222
+2026-07-29 09:38:21,107 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (5): 127.0.0.1:9222
+2026-07-29 09:38:21,107 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (5): 127.0.0.1:9222
+2026-07-29 09:38:21,312 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (6): 127.0.0.1:9222
+2026-07-29 09:38:21,312 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (6): 127.0.0.1:9222
+2026-07-29 09:38:21,519 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (7): 127.0.0.1:9222
+2026-07-29 09:38:21,519 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (7): 127.0.0.1:9222
+2026-07-29 09:38:21,726 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (8): 127.0.0.1:9222
+2026-07-29 09:38:21,726 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (8): 127.0.0.1:9222
+2026-07-29 09:38:21,932 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (9): 127.0.0.1:9222
+2026-07-29 09:38:21,932 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (9): 127.0.0.1:9222
+2026-07-29 09:38:22,138 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (10): 127.0.0.1:9222
+2026-07-29 09:38:22,138 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (10): 127.0.0.1:9222
+2026-07-29 09:38:22,342 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (11): 127.0.0.1:9222
+2026-07-29 09:38:22,342 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (11): 127.0.0.1:9222
+2026-07-29 09:38:22,548 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (12): 127.0.0.1:9222
+2026-07-29 09:38:22,548 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (12): 127.0.0.1:9222
+2026-07-29 09:38:22,752 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (13): 127.0.0.1:9222
+2026-07-29 09:38:22,752 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (13): 127.0.0.1:9222
+2026-07-29 09:38:22,955 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (14): 127.0.0.1:9222
+2026-07-29 09:38:22,955 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (14): 127.0.0.1:9222
+2026-07-29 09:38:24,401 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1397
+2026-07-29 09:38:24,401 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1397
+2026-07-29 09:38:24,419 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:24,419 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:24,420 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:24,420 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:24,439 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:38:24,439 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:38:24,562 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json/version HTTP/1.1" 200 405
+2026-07-29 09:38:24,562 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json/version HTTP/1.1" 200 405
+2026-07-29 09:38:25,165 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:25,165 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:25,166 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:25,166 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:38:25,175 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:38:25,175 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:38:25,183 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1423
+2026-07-29 09:38:25,183 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1423
+2026-07-29 09:38:30,289 - novelbin.solver - INFO - ⏳ Waiting for Cloudflare challenge...
+2026-07-29 09:38:30,289 - novelbin.solver - INFO - ⏳ Waiting for Cloudflare challenge...
+2026-07-29 09:38:30,290 - novelbin.solver - INFO - 💡 NOTE: If a puzzle appears, please solve it in the popup window!
+2026-07-29 09:38:30,290 - novelbin.solver - INFO - 💡 NOTE: If a puzzle appears, please solve it in the popup window!
+2026-07-29 09:38:30,294 - novelbin.solver - INFO - ⏱️  This will wait indefinitely until the puzzle is solved or you abort.
+2026-07-29 09:38:30,294 - novelbin.solver - INFO - ⏱️  This will wait indefinitely until the puzzle is solved or you abort.
+2026-07-29 09:38:30,843 - novelbin.solver - INFO - ✅ Page loaded successfully!
+2026-07-29 09:38:30,843 - novelbin.solver - INFO - ✅ Page loaded successfully!
+2026-07-29 09:38:33,850 - novelbin.solver - DEBUG - Headers extracted: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'Referer': 'https://novelarrow.com/'}
+2026-07-29 09:38:33,850 - novelbin.solver - DEBUG - Headers extracted: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'Referer': 'https://novelarrow.com/'}
+2026-07-29 09:38:33,851 - novelbin.solver - INFO - ✅ Cloudflare bypassed! Headers extracted.
+2026-07-29 09:38:33,851 - novelbin.solver - INFO - ✅ Cloudflare bypassed! Headers extracted.
+2026-07-29 09:38:38,792 - novelbin.helpers - INFO - Extracting data dynamically from EPUB archive: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:38:38,792 - novelbin.helpers - INFO - Extracting data dynamically from EPUB archive: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:38:38,923 - novelbin.helpers - INFO - Extracted existing cover image: EPUB/cover.jpg
+2026-07-29 09:38:38,923 - novelbin.helpers - INFO - Extracted existing cover image: EPUB/cover.jpg
+2026-07-29 09:38:41,567 - novelbin.epub_builder - INFO - Rebuilding EPUB for 'Checking in for 100,000 Years' with updated metadata...
+2026-07-29 09:38:41,567 - novelbin.epub_builder - INFO - Rebuilding EPUB for 'Checking in for 100,000 Years' with updated metadata...
+2026-07-29 09:38:41,567 - novelbin.epub_builder - INFO - Building EPUB for 'Checking in for 100,000 Years'...
+2026-07-29 09:38:41,567 - novelbin.epub_builder - INFO - Building EPUB for 'Checking in for 100,000 Years'...
+2026-07-29 09:38:44,569 - novelbin.epub_builder - INFO - Added 106 chapters.
+2026-07-29 09:38:44,569 - novelbin.epub_builder - INFO - Added 106 chapters.
+2026-07-29 09:38:44,932 - novelbin.epub_builder - INFO - Successfully created EPUB: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:38:44,932 - novelbin.epub_builder - INFO - Successfully created EPUB: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:38:44,933 - novelbin.epub_builder - INFO - ✅ Successfully rebuilt EPUB with new metadata: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:38:44,933 - novelbin.epub_builder - INFO - ✅ Successfully rebuilt EPUB with new metadata: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:50:29,176 - asyncio - DEBUG - Using selector: EpollSelector
+2026-07-29 09:50:29,176 - asyncio - DEBUG - Using selector: EpollSelector
+2026-07-29 09:50:29,184 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:50:29,184 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:50:29,191 - novelbin.scraper - INFO - 🧹 Starting background cache cleanup (TTL: 48h, Limit: 1024MB)...
+2026-07-29 09:50:29,191 - novelbin.scraper - INFO - 🧹 Starting background cache cleanup (TTL: 48h, Limit: 1024MB)...
+2026-07-29 09:50:32,078 - novelbin.auth - INFO - ⏱️ Auth token reached its 3-hour limit. Refreshing proactively...
+2026-07-29 09:50:32,078 - novelbin.auth - INFO - ⏱️ Auth token reached its 3-hour limit. Refreshing proactively...
+2026-07-29 09:50:32,080 - novelbin.auth - INFO - 🔑 Authenticating with API...
+2026-07-29 09:50:32,080 - novelbin.auth - INFO - 🔑 Authenticating with API...
+2026-07-29 09:50:32,084 - novelbin.auth - DEBUG - Loaded Cloudflare clearance cookies from shared cache.
+2026-07-29 09:50:32,084 - novelbin.auth - DEBUG - Loaded Cloudflare clearance cookies from shared cache.
+2026-07-29 09:50:33,471 - novelbin.auth - INFO - ✅ Login successful! Token valid for the next 3 hours.
+2026-07-29 09:50:33,471 - novelbin.auth - INFO - ✅ Login successful! Token valid for the next 3 hours.
+2026-07-29 09:50:33,812 - novelbin.scraper - DEBUG - 404 Not Found for https://novelarrow.com/api-web/novels/checking-in-for-100-000-years/.
+2026-07-29 09:50:33,812 - novelbin.scraper - DEBUG - 404 Not Found for https://novelarrow.com/api-web/novels/checking-in-for-100-000-years/.
+2026-07-29 09:50:33,815 - novelbin.epub_builder - INFO - Auto-generated URL from name/path: https://novelarrow.com/novel/checking-in-for-100000-years
+2026-07-29 09:50:33,815 - novelbin.epub_builder - INFO - Auto-generated URL from name/path: https://novelarrow.com/novel/checking-in-for-100000-years
+2026-07-29 09:50:33,817 - novelbin.epub_builder - INFO - Fetching fresh metadata for https://novelarrow.com/novel/checking-in-for-100000-years using AsyncScraper...
+2026-07-29 09:50:33,817 - novelbin.epub_builder - INFO - Fetching fresh metadata for https://novelarrow.com/novel/checking-in-for-100000-years using AsyncScraper...
+2026-07-29 09:50:33,819 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:50:33,819 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:50:34,891 - novelbin.scraper - INFO - Cloudflare challenge detected for https://novelarrow.com/novel/checking-in-for-100000-years. Waking solver...
+2026-07-29 09:50:34,891 - novelbin.scraper - INFO - Cloudflare challenge detected for https://novelarrow.com/novel/checking-in-for-100000-years. Waking solver...
+2026-07-29 09:50:35,835 - novelbin.solver - INFO - 🤖 Launching browser to bypass Cloudflare...
+2026-07-29 09:50:35,835 - novelbin.solver - INFO - 🤖 Launching browser to bypass Cloudflare...
+2026-07-29 09:50:35,866 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:35,866 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:35,867 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:35,867 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:35,869 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:50:35,869 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:50:36,073 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (2): 127.0.0.1:9222
+2026-07-29 09:50:36,073 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (2): 127.0.0.1:9222
+2026-07-29 09:50:36,275 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (3): 127.0.0.1:9222
+2026-07-29 09:50:36,275 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (3): 127.0.0.1:9222
+2026-07-29 09:50:36,478 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (4): 127.0.0.1:9222
+2026-07-29 09:50:36,478 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (4): 127.0.0.1:9222
+2026-07-29 09:50:36,682 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (5): 127.0.0.1:9222
+2026-07-29 09:50:36,682 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (5): 127.0.0.1:9222
+2026-07-29 09:50:36,893 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (6): 127.0.0.1:9222
+2026-07-29 09:50:36,893 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (6): 127.0.0.1:9222
+2026-07-29 09:50:37,100 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (7): 127.0.0.1:9222
+2026-07-29 09:50:37,100 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (7): 127.0.0.1:9222
+2026-07-29 09:50:37,642 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1397
+2026-07-29 09:50:37,642 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1397
+2026-07-29 09:50:37,655 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:37,655 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:37,659 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:37,659 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:37,667 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:50:37,667 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:50:37,832 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json/version HTTP/1.1" 200 405
+2026-07-29 09:50:37,832 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json/version HTTP/1.1" 200 405
+2026-07-29 09:50:38,580 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:38,580 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:38,581 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:38,581 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 09:50:38,587 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:50:38,587 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 09:50:39,178 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1423
+2026-07-29 09:50:39,178 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1423
+2026-07-29 09:50:43,011 - novelbin.solver - INFO - ⏳ Waiting for Cloudflare challenge...
+2026-07-29 09:50:43,011 - novelbin.solver - INFO - ⏳ Waiting for Cloudflare challenge...
+2026-07-29 09:50:43,011 - novelbin.solver - INFO - 💡 NOTE: If a puzzle appears, please solve it in the popup window!
+2026-07-29 09:50:43,011 - novelbin.solver - INFO - 💡 NOTE: If a puzzle appears, please solve it in the popup window!
+2026-07-29 09:50:43,012 - novelbin.solver - INFO - ⏱️  This will wait indefinitely until the puzzle is solved or you abort.
+2026-07-29 09:50:43,012 - novelbin.solver - INFO - ⏱️  This will wait indefinitely until the puzzle is solved or you abort.
+2026-07-29 09:50:43,543 - novelbin.solver - INFO - ✅ Page loaded successfully!
+2026-07-29 09:50:43,543 - novelbin.solver - INFO - ✅ Page loaded successfully!
+2026-07-29 09:50:46,550 - novelbin.solver - DEBUG - Headers extracted: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'Referer': 'https://novelarrow.com/'}
+2026-07-29 09:50:46,550 - novelbin.solver - DEBUG - Headers extracted: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'Referer': 'https://novelarrow.com/'}
+2026-07-29 09:50:46,550 - novelbin.solver - INFO - ✅ Cloudflare bypassed! Headers extracted.
+2026-07-29 09:50:46,550 - novelbin.solver - INFO - ✅ Cloudflare bypassed! Headers extracted.
+2026-07-29 09:50:51,031 - novelbin.helpers - INFO - Extracting data dynamically from EPUB archive: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:50:51,031 - novelbin.helpers - INFO - Extracting data dynamically from EPUB archive: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:50:51,047 - novelbin.helpers - INFO - Extracted existing cover image: EPUB/cover.jpg
+2026-07-29 09:50:51,047 - novelbin.helpers - INFO - Extracted existing cover image: EPUB/cover.jpg
+2026-07-29 09:50:53,569 - novelbin.epub_builder - INFO - Rebuilding EPUB for 'Checking in for 100,000 Years' with updated metadata...
+2026-07-29 09:50:53,569 - novelbin.epub_builder - INFO - Rebuilding EPUB for 'Checking in for 100,000 Years' with updated metadata...
+2026-07-29 09:50:53,570 - novelbin.epub_builder - INFO - Building EPUB for 'Checking in for 100,000 Years'...
+2026-07-29 09:50:53,570 - novelbin.epub_builder - INFO - Building EPUB for 'Checking in for 100,000 Years'...
+2026-07-29 09:50:56,542 - novelbin.epub_builder - INFO - Added 106 chapters.
+2026-07-29 09:50:56,542 - novelbin.epub_builder - INFO - Added 106 chapters.
+2026-07-29 09:50:56,854 - novelbin.epub_builder - INFO - Successfully created EPUB: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:50:56,854 - novelbin.epub_builder - INFO - Successfully created EPUB: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:50:56,854 - novelbin.epub_builder - INFO - ✅ Successfully rebuilt EPUB with new metadata: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:50:56,854 - novelbin.epub_builder - INFO - ✅ Successfully rebuilt EPUB with new metadata: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:51:57,784 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:51:57,784 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:53:45,225 - asyncio - DEBUG - Using selector: EpollSelector
+2026-07-29 09:53:45,225 - asyncio - DEBUG - Using selector: EpollSelector
+2026-07-29 09:53:45,230 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:53:45,230 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 09:53:45,232 - novelbin.scraper - INFO - 🧹 Starting background cache cleanup (TTL: 48h, Limit: 1024MB)...
+2026-07-29 09:53:45,232 - novelbin.scraper - INFO - 🧹 Starting background cache cleanup (TTL: 48h, Limit: 1024MB)...
+2026-07-29 09:54:49,771 - novelbin.epub_builder - INFO - Building EPUB for 'Checking in for 100,000 Years'...
+2026-07-29 09:54:49,771 - novelbin.epub_builder - INFO - Building EPUB for 'Checking in for 100,000 Years'...
+2026-07-29 09:54:53,155 - novelbin.epub_builder - INFO - Added 106 chapters.
+2026-07-29 09:54:53,155 - novelbin.epub_builder - INFO - Added 106 chapters.
+2026-07-29 09:54:53,654 - novelbin.epub_builder - INFO - Successfully created EPUB: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 09:54:53,654 - novelbin.epub_builder - INFO - Successfully created EPUB: /home/dubsy/Documents/Novels/Checking in for 100,000 Years.epub
+2026-07-29 10:13:33,809 - novelbin.scraper - INFO - Cloudflare challenge detected for https://novelarrow.com/novels/search?keyword=cultivation+system. Waking solver...
+2026-07-29 10:13:33,809 - novelbin.scraper - INFO - Cloudflare challenge detected for https://novelarrow.com/novels/search?keyword=cultivation+system. Waking solver...
+2026-07-29 10:13:34,517 - novelbin.solver - INFO - 🤖 Launching browser to bypass Cloudflare...
+2026-07-29 10:13:34,517 - novelbin.solver - INFO - 🤖 Launching browser to bypass Cloudflare...
+2026-07-29 10:13:34,539 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:34,539 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:34,540 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:34,540 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:34,542 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 10:13:34,542 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 10:13:34,745 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (2): 127.0.0.1:9222
+2026-07-29 10:13:34,745 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (2): 127.0.0.1:9222
+2026-07-29 10:13:34,948 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (3): 127.0.0.1:9222
+2026-07-29 10:13:34,948 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (3): 127.0.0.1:9222
+2026-07-29 10:13:35,150 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (4): 127.0.0.1:9222
+2026-07-29 10:13:35,150 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (4): 127.0.0.1:9222
+2026-07-29 10:13:35,352 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (5): 127.0.0.1:9222
+2026-07-29 10:13:35,352 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (5): 127.0.0.1:9222
+2026-07-29 10:13:35,560 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (6): 127.0.0.1:9222
+2026-07-29 10:13:35,560 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (6): 127.0.0.1:9222
+2026-07-29 10:13:35,904 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1397
+2026-07-29 10:13:35,904 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1397
+2026-07-29 10:13:35,907 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:35,907 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:35,909 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:35,909 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:35,918 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 10:13:35,918 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 10:13:35,979 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json/version HTTP/1.1" 200 405
+2026-07-29 10:13:35,979 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json/version HTTP/1.1" 200 405
+2026-07-29 10:13:36,401 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:36,401 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:36,402 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:36,402 - urllib3.util.retry - DEBUG - Converted retries value: 0 -> Retry(total=0, connect=None, read=None, redirect=None, status=None)
+2026-07-29 10:13:36,418 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 10:13:36,418 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:9222
+2026-07-29 10:13:36,939 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1423
+2026-07-29 10:13:36,939 - urllib3.connectionpool - DEBUG - http://127.0.0.1:9222 "GET /json HTTP/1.1" 200 1423
+2026-07-29 10:13:41,213 - novelbin.solver - INFO - ⏳ Waiting for Cloudflare challenge...
+2026-07-29 10:13:41,213 - novelbin.solver - INFO - ⏳ Waiting for Cloudflare challenge...
+2026-07-29 10:13:41,214 - novelbin.solver - INFO - 💡 NOTE: If a puzzle appears, please solve it in the popup window!
+2026-07-29 10:13:41,214 - novelbin.solver - INFO - 💡 NOTE: If a puzzle appears, please solve it in the popup window!
+2026-07-29 10:13:41,217 - novelbin.solver - INFO - ⏱️  This will wait indefinitely until the puzzle is solved or you abort.
+2026-07-29 10:13:41,217 - novelbin.solver - INFO - ⏱️  This will wait indefinitely until the puzzle is solved or you abort.
+2026-07-29 10:13:41,722 - novelbin.solver - INFO - ✅ Page loaded successfully!
+2026-07-29 10:13:41,722 - novelbin.solver - INFO - ✅ Page loaded successfully!
+2026-07-29 10:13:44,730 - novelbin.solver - DEBUG - Headers extracted: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'Referer': 'https://novelarrow.com/'}
+2026-07-29 10:13:44,730 - novelbin.solver - DEBUG - Headers extracted: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'Referer': 'https://novelarrow.com/'}
+2026-07-29 10:13:44,730 - novelbin.solver - INFO - ✅ Cloudflare bypassed! Headers extracted.
+2026-07-29 10:13:44,730 - novelbin.solver - INFO - ✅ Cloudflare bypassed! Headers extracted.
+2026-07-29 10:13:47,184 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 10:13:47,184 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 10:14:02,951 - novelbin.epub_builder - INFO - Building EPUB for 'Cultivation System: Stronger with Age'...
+2026-07-29 10:14:02,951 - novelbin.epub_builder - INFO - Building EPUB for 'Cultivation System: Stronger with Age'...
+2026-07-29 10:14:02,983 - novelbin.epub_builder - INFO - Added 1 chapters.
+2026-07-29 10:14:02,983 - novelbin.epub_builder - INFO - Added 1 chapters.
+2026-07-29 10:14:03,022 - novelbin.epub_builder - INFO - Successfully created EPUB: /home/dubsy/Documents/Novels/Cultivation System Stronger with Age.epub
+2026-07-29 10:14:03,022 - novelbin.epub_builder - INFO - Successfully created EPUB: /home/dubsy/Documents/Novels/Cultivation System Stronger with Age.epub
+2026-07-29 10:19:27,435 - novelbin.epub_builder - INFO - Auto-generated URL from name/path: https://novelarrow.com/novel/cultivation-system-stronger-with-age
+2026-07-29 10:19:27,435 - novelbin.epub_builder - INFO - Auto-generated URL from name/path: https://novelarrow.com/novel/cultivation-system-stronger-with-age
+2026-07-29 10:19:27,436 - novelbin.epub_builder - INFO - Fetching fresh metadata for https://novelarrow.com/novel/cultivation-system-stronger-with-age using AsyncScraper...
+2026-07-29 10:19:27,436 - novelbin.epub_builder - INFO - Fetching fresh metadata for https://novelarrow.com/novel/cultivation-system-stronger-with-age using AsyncScraper...
+2026-07-29 10:19:27,439 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.
+2026-07-29 10:19:27,439 - novelbin.scraper - DEBUG - 🍪 Synced cookies from disk.

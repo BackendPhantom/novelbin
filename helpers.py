@@ -197,14 +197,14 @@ def _resolve_library_url(target_url: str) -> Path:
         if isinstance(library_data, list):
             for entry in library_data:
                 if entry.get("url") == target_url:
-                    path_str = entry.get("file_path")
+                    path_str = entry.get("output_path")
                     if path_str:
                         return Path(path_str)
 
         elif isinstance(library_data, dict):
             if target_url in library_data:
                 entry = library_data[target_url]
-                path_str = entry.get("file_path") if isinstance(entry, dict) else entry
+                path_str = entry.get("output_path") if isinstance(entry, dict) else entry
                 if path_str:
                     return Path(path_str)
 
@@ -363,3 +363,86 @@ def _extract_epub_data(epub_path: Path):
                 logger.warning(f"Failed to process chapter {chapter_zip_path}: {e}")
 
     return metadata, chapters, cover_bytes
+
+
+
+
+def _simplify_text(text: str) -> str:
+    """Strips spaces, punctuation, numbers, and the word 'chapter'."""
+    text = text.lower()
+    text = re.sub(r'\bchapter\b', '', text)
+    return re.sub(r'[^a-z]', '', text)
+
+def _format_chapter_html(chapter_data: dict, default_index: int) -> tuple[str, str]:
+    """
+    Cleans API chapter HTML by taking the raw chapter dictionary.
+    
+    Extracts the 'title' and 'content', peels away any duplicated title 
+    elements at the top of the HTML, inserts a single authoritative <h4>, 
+    and demotes all other heading tags.
+    """
+    # Extract data directly from the API dictionary
+    raw_title = _normalize_whitespace(chapter_data.get("title", "")) or f"Chapter {default_index}"
+    body = chapter_data.get("content", "")
+
+    soup = BeautifulSoup(body, "html.parser")
+    title_lower = raw_title.lower()
+    target_simple = _simplify_text(raw_title)
+
+    # ----------------------------------------------------------
+    # Remove leading title elements inserted by the API
+    # ----------------------------------------------------------
+    while True:
+        first = soup.find(
+            ["p", "h1", "h2", "h3", "h4", "h5", "h6", "div", "span"]
+        )
+
+        if first is None:
+            break
+
+        text = _normalize_whitespace(first.get_text())
+        if not text:
+            first.decompose()
+            continue
+
+        text_lower = text.lower()
+        elem_simple = _simplify_text(text)
+
+        # Condition 1: Exact string match
+        is_duplicate = (text_lower == title_lower)
+        
+        # Condition 2: Stripped core text matches perfectly
+        if not is_duplicate and target_simple != "" and elem_simple == target_simple:
+            is_duplicate = True
+            
+        # Condition 3: Explicitly starts with "Chapter [Number]" 
+        if not is_duplicate and re.match(r"^\s*chapter\s*\d+", text_lower):
+            is_duplicate = True
+
+        if is_duplicate:
+            first.decompose()
+            continue
+
+        # Stop deleting once we hit actual story content
+        break
+
+    # ----------------------------------------------------------
+    # Insert our single official title
+    # ----------------------------------------------------------
+    official_h4 = soup.new_tag("h4")
+    official_h4.string = raw_title
+
+    if soup.body:
+        soup.body.insert(0, official_h4)
+    else:
+        soup.insert(0, official_h4)
+
+    # ----------------------------------------------------------
+    # Demote every other heading
+    # ----------------------------------------------------------
+    for heading in soup.find_all(re.compile(r"^h[1-6]$", re.I)):
+        if heading is official_h4:
+            continue
+        heading.name = "p"
+
+    return str(soup), raw_title
