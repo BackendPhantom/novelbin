@@ -343,8 +343,6 @@ async def update_epub_metadata_async(
 
         # If successful, extract metadata from the live site
         meta = await scraper.extract_metadata(session, url)
-        with open (Path().cwd()/"meta.txt", "w", encoding="utf-8") as f:
-            f.write(str(meta))
         if meta:
             # Unpack the 5-item tuple, discarding API chapters (_) to preserve local ones
             scraped_title, scraped_author, scraped_cover_url, scraped_description, _ = (
