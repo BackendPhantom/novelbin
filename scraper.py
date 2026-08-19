@@ -414,22 +414,30 @@ class AsyncScraper:
             ad.decompose()
         return soup
 
-    async def search_novel(self, query: str) -> List[Dict]:
+    async def search_novel(self, query: str, page: int = 1) -> Tuple[List[Dict], bool]:
         async with AsyncSession(impersonate="chrome120") as session:
-            url = f"{BASE_URL}/novels/search?keyword={query.replace(' ', '+')}"
+            url = f"{BASE_URL}/novels/search?keyword={query.replace(' ', '+')}&page={page}"
             html = await self._fetch_url(session, url, require_auth=False)
+            
             if not html:
-                return []
+                return [], False
+                
             soup = self.clean_soup(html)
-            results = []
+            page_results = []
+            
             for item in soup.select(".site-panel.group"):
                 link = item.select_one("a[title]")
                 if link:
                     href = link["href"]
                     if not href.startswith("http"):
                         href = BASE_URL + href
-                    results.append({"title": link["title"], "url": href})
-            return results
+                    page_results.append({"title": link["title"], "url": href})
+            
+            # Check for the presence of the 'Next' button to determine if more pages exist
+            next_button = soup.find("a", string=re.compile(r"Next", re.IGNORECASE))
+            has_next = bool(next_button)
+            
+            return page_results, has_next
 
     async def try_slug_urls(self, query: str) -> Optional[Dict]:
         slugs = generate_slug_variants(query)
@@ -492,6 +500,7 @@ class AsyncScraper:
                 if novel_info:
                     title = novel_info.get("novel_name", "Untitled")
                     author = novel_info.get("novel_author")
+                    status = novel_info.get("novel_status", 0)
 
                     raw_desc = novel_info.get("novel_desc", "")
                     description = ""
@@ -538,7 +547,7 @@ class AsyncScraper:
                         page += 1
 
                     if chapters:
-                        return title, author, cover_url, description, chapters
+                        return title, author, cover_url, description, chapters, status
 
         except Exception as e:
             print(f"DEBUG: API extraction failed or timed out ({e}).")
