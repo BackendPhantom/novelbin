@@ -3,12 +3,11 @@ import os
 from pathlib import Path
 
 # Network Settings
-BASE_URL = "https://novelarrow.com"
+BASE_URL = "novelping.com"
 
 # Default Headers (Fallback)
 HEADERS = {
-    "Referer": BASE_URL,
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+    "Referer": BASE_URL
 }
 
 MAX_CONCURRENT_REQUESTS = 10  # Increased from 3 for faster parallel downloads

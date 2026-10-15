@@ -45,7 +45,7 @@ async def refresh_cover_mode(scraper, lib, name=None, path=None, url=None, mode=
         novel_url = f"{BASE_URL.rstrip('/')}/novel/{slug}"
 
     # 2. Securely fetch metadata and cover image bypassing Cloudflare
-    async with AsyncSession(impersonate="chrome") as session:
+    async with AsyncSession(impersonate="chrome150") as session:
         meta = await scraper.extract_metadata(session, novel_url)
         
         if meta:
@@ -60,7 +60,7 @@ async def refresh_cover_mode(scraper, lib, name=None, path=None, url=None, mode=
                         headers=scraper.current_headers,
                         cookies=scraper.current_cookies,
                         timeout=15,
-                        impersonate="chrome120",
+                        impersonate="chrome150",
                     )
                     if getattr(resp, "status_code", None) == 200:
                         cover_bytes = getattr(resp, "content", None)

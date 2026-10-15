@@ -76,7 +76,7 @@ def create_epub(
                 if not content and cover_url:
                     res = requests.get(
                         cover_url,
-                        impersonate="chrome120",
+                        impersonate="chrome150",
                         timeout=15,
                     )
                     if res.status_code == 200:
@@ -315,7 +315,7 @@ async def update_epub_metadata_async(
         # 2. Verify URL and Scrape Fresh Metadata
         logger.info(f"Fetching fresh metadata for {url} using AsyncScraper...")
         scraper = AsyncScraper()
-        async with AsyncSession(impersonate="chrome120") as session:
+        async with AsyncSession(impersonate="chrome150") as session:
             # _fetch_url handles Cloudflare and returns None if it fails or 404s
             html = await scraper._fetch_url(session, url)
             if not html:

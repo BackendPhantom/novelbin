@@ -118,7 +118,7 @@ async def _start_background_download(
         task_manager.set_status(
             job, "processing", f"Downloading {len(selection_indices)} chapters"
         )
-        async with AsyncSession(impersonate="chrome") as bg_session:
+        async with AsyncSession(impersonate="chrome150") as bg_session:
             success = await download_workflow(
                 scraper,
                 bg_session,
