@@ -42,6 +42,12 @@ async def run_cli():
         "--epub-path",
         help="Optional explicit EPUB path to update when refreshing a cover",
     )
+    # --- ADDED: Offline flag ---
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="Run operations in offline mode (local only, no network)",
+    )
     args = parser.parse_args()
 
     from .library import LibraryManager
@@ -86,13 +92,16 @@ async def run_cli():
         return
 
     if args.refresh_cover:
+        # --- ADDED: Mode selection ---
+        mode = "offline" if args.offline else "online"
+        
         # Dynamically determine if the argument is a URL, File Path, or Name
         if "http" in args.refresh_cover:
-            await refresh_cover_mode(scraper, lib, url=args.refresh_cover, path=args.epub_path)
+            await refresh_cover_mode(scraper, lib, url=args.refresh_cover, path=args.epub_path, mode=mode)
         elif args.refresh_cover.endswith(".epub") or "/" in args.refresh_cover or "\\" in args.refresh_cover:
-            await refresh_cover_mode(scraper, lib, path=args.refresh_cover)
+            await refresh_cover_mode(scraper, lib, path=args.refresh_cover, mode=mode)
         else:
-            await refresh_cover_mode(scraper, lib, name=args.refresh_cover, path=args.epub_path)
+            await refresh_cover_mode(scraper, lib, name=args.refresh_cover, path=args.epub_path, mode=mode)
         return
 
     loop = asyncio.get_event_loop()
@@ -136,11 +145,11 @@ async def run_cli():
 
         if command in ("help", "h", "?"):
             print("""
-📚 Available Commands:
+  Available Commands:
   search <query>           - Search for a novel and download chapters
   update                   - Check all library novels for new chapters
   download <name-or-url>   - Download a novel by name or URL (comma-separated for multiple)
-  meta <url|name|path>         - Refresh metadata and cover image for an existing EPUB
+  meta <url|path> [--offline] - Refresh metadata/cover for an EPUB or batch folder
   status                   - Show active scrape/download jobs
   cancel <job#|url>        - Cancel a job by index or URL
   watch                    - Monitor job progress in real-time
@@ -252,16 +261,22 @@ async def run_cli():
 
         if command == "meta":
             if not arg:
-                print("Usage: meta <novel-url> | <epub-file-path> | <novel-name>")
+                print("Usage: meta <novel-url> | <epub-file-path> | <folder-path> [--offline]")
                 continue
-                
+            
+            # --- ADDED: Parse offline flag from interactive command ---
+            mode = "online"
+            if arg.endswith("--offline"):
+                mode = "offline"
+                arg = arg.replace("--offline", "").strip()
+
             # Route the input to the correct keyword argument
             if "http" in arg:
-                await refresh_cover_mode(scraper, lib, url=arg)
+                await refresh_cover_mode(scraper, lib, url=arg, mode=mode)
             elif arg.endswith(".epub") or "/" in arg or "\\" in arg:
-                await refresh_cover_mode(scraper, lib, path=arg)
+                await refresh_cover_mode(scraper, lib, path=arg, mode=mode)
             else:
-                await refresh_cover_mode(scraper, lib, name=arg)
+                await refresh_cover_mode(scraper, lib, name=arg, mode=mode)
             continue
 
         if command == "library":

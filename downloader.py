@@ -201,7 +201,7 @@ async def download_workflow(
                     headers=scraper.current_headers,
                     cookies=scraper.current_cookies,
                     timeout=15,
-                    impersonate="chrome120",
+                    impersonate="chrome150",
                 )
                 if getattr(resp, "status_code", None) == 200:
                     # curl_cffi exposes raw bytes on `.content`
@@ -271,14 +271,14 @@ async def save_raw_html(urls, out_dir: Path):
     out_dir.mkdir(parents=True, exist_ok=True)
     saved_paths = []
 
-    async with AsyncSession(impersonate="chrome120") as session:
+    async with AsyncSession(impersonate="chrome150") as session:
         for url in urls:
             try:
                 response = await session.get(
                     url,
                     headers=HEADERS,
                     timeout=30,
-                    impersonate="chrome120",
+                    impersonate="chrome150",
                 )
                 html = response.text
                 if not html:

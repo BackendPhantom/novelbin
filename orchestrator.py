@@ -13,8 +13,8 @@ import asyncio
 
 
 async def download_single_novel(scraper, lib, url: str, ainput=None, manager=None):
-    async with AsyncSession(impersonate="chrome") as session:
-        title, author, cover, description, all_chapters = (
+    async with AsyncSession(impersonate="chrome150") as session:
+        title, author, cover, description, all_chapters, status = (
             await scraper.extract_metadata(session, url)
         )
 
@@ -81,7 +81,7 @@ async def download_single_novel(scraper, lib, url: str, ainput=None, manager=Non
             )
             return None
 
-        if not library_entry:
+        if not library_entry and status == 0:
             if ainput is None:
                 fav = input("⭐ Add to Library for tracking? [y/N]: ").strip().lower()
             else:
@@ -116,8 +116,8 @@ async def download_single_novel(scraper, lib, url: str, ainput=None, manager=Non
 
 async def scrape_direct_url_job(scraper, lib, url: str, job, task_manager, ainput=None):
     task_manager.set_status(job, "scraping", "Fetching metadata")
-    async with AsyncSession(impersonate="chrome") as session:
-        title, author, cover, description, all_chapters = (
+    async with AsyncSession(impersonate="chrome150") as session:
+        title, author, cover, description, all_chapters, status = (
             await scraper.extract_metadata(session, url)
         )
 
@@ -180,7 +180,7 @@ async def check_updates(
 
     print(f"\n🔄 Checking updates for {len(favorites)} novels...")
 
-    async with AsyncSession(impersonate="chrome") as session:
+    async with AsyncSession(impersonate="chrome150") as session:
         tasks = []
         for url, data in favorites.items():
             tasks.append(check_single_novel(scraper, session, url, data))
@@ -282,7 +282,7 @@ async def check_updates(
 
 async def check_single_novel(scraper, session, url, data):
     try:
-        title, author, cover, description, current_chapters = (
+        title, author, cover, description, current_chapters,status = (
             await scraper.extract_metadata(session, url)
         )
         current_count = len(current_chapters)
@@ -305,3 +305,6 @@ async def check_single_novel(scraper, session, url, data):
     except Exception as e:
         print(f"⚠️ Error checking {data['title']}: {e}")
     return None
+
+
+

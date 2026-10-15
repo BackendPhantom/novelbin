@@ -291,7 +291,7 @@ class AsyncScraper:
                         headers=req_headers,
                         cookies=req_cookies,
                         timeout=REQUEST_TIMEOUT,
-                        impersonate="chrome120",
+                        impersonate="chrome150",
                     )
 
                     response_text = response.text
@@ -414,29 +414,37 @@ class AsyncScraper:
             ad.decompose()
         return soup
 
-    async def search_novel(self, query: str) -> List[Dict]:
-        async with AsyncSession(impersonate="chrome120") as session:
-            url = f"{BASE_URL}/novels/search?keyword={query.replace(' ', '+')}"
+    async def search_novel(self, query: str, page: int = 1) -> Tuple[List[Dict], bool]:
+        async with AsyncSession(impersonate="chrome150") as session:
+            url = f"{BASE_URL}/novels/search?keyword={query.replace(' ', '+')}&page={page}"
             html = await self._fetch_url(session, url, require_auth=False)
+            
             if not html:
-                return []
+                return [], False
+                
             soup = self.clean_soup(html)
-            results = []
+            page_results = []
+            
             for item in soup.select(".site-panel.group"):
                 link = item.select_one("a[title]")
                 if link:
                     href = link["href"]
                     if not href.startswith("http"):
                         href = BASE_URL + href
-                    results.append({"title": link["title"], "url": href})
-            return results
+                    page_results.append({"title": link["title"], "url": href})
+            
+            # Check for the presence of the 'Next' button to determine if more pages exist
+            next_button = soup.find("a", string=re.compile(r"Next", re.IGNORECASE))
+            has_next = bool(next_button)
+            
+            return page_results, has_next
 
     async def try_slug_urls(self, query: str) -> Optional[Dict]:
         slugs = generate_slug_variants(query)
         if not slugs:
             return None
 
-        async with AsyncSession(impersonate="chrome120") as session:
+        async with AsyncSession(impersonate="chrome150") as session:
             for slug in slugs:
                 url = f"{BASE_URL}/novel/{slug}"
                 html = await self._fetch_url(session, url, require_auth=False)
@@ -492,6 +500,7 @@ class AsyncScraper:
                 if novel_info:
                     title = novel_info.get("novel_name", "Untitled")
                     author = novel_info.get("novel_author")
+                    status = novel_info.get("novel_status", 0)
 
                     raw_desc = novel_info.get("novel_desc", "")
                     description = ""
@@ -506,7 +515,7 @@ class AsyncScraper:
                     else:
                         description = "Description not found."
 
-                    cover_url = f"https://images.novelarrow.com/novel/{novel_slug}.jpg"
+                    cover_url = f"https://images.{BASE_URL}/novel/{novel_slug}.jpg"
 
                     chapters = []
                     page = 1
@@ -530,7 +539,7 @@ class AsyncScraper:
                             c_id = chapter.get("chapter_id")
                             c_name = chapter.get("chapter_name")
                             if c_id and c_name:
-                                c_url = f"{BASE_URL}/chapter/{novel_slug}/{c_id}"
+                                c_url = f"{BASE_URL}/book/{novel_slug}/{c_id}"
                                 chapters.append({"name": c_name, "url": c_url})
 
                         pagination = chapters_data.get("pagination", {})
@@ -538,7 +547,7 @@ class AsyncScraper:
                         page += 1
 
                     if chapters:
-                        return title, author, cover_url, description, chapters
+                        return title, author, cover_url, description, chapters, status
 
         except Exception as e:
             print(f"DEBUG: API extraction failed or timed out ({e}).")
@@ -567,7 +576,7 @@ class AsyncScraper:
         novel_slug = parts[-2]
 
         api_url = (
-            f"https://novelarrow.com/api-web/novels/{novel_slug}/chapters/{chapter_id}"
+            f"{BASE_URL}/api-web/novels/{novel_slug}/chapters/{chapter_id}"
         )
         json_str = await self._fetch_url(session, api_url)
 
@@ -667,7 +676,7 @@ class AsyncScraper:
         out_path = Path(out_dir)
         out_path.mkdir(parents=True, exist_ok=True)
 
-        async with AsyncSession(impersonate="chrome120") as session:
+        async with AsyncSession(impersonate="chrome150") as session:
             for url in urls:
                 try:
                     html = await self._fetch_url(session, url)
